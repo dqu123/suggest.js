@@ -8,8 +8,11 @@
 
 // Add suggest object as global
 var suggest = (function() {
+    // Object that becomes suggest object.
     var obj = {};
-    var dict = {};
+
+    // Suggestion dictionary.
+    var suggest_dict = {};
     
     // Constants
     var ENTER_KEY = 13;
@@ -27,7 +30,7 @@ var suggest = (function() {
     obj.updateDict = function(new_dict) {
         // Adds keys to dictionary.
         for (var key in new_dict) {
-            dict[key] = new_dict[key]
+            suggest_dict[key] = new_dict[key]
         }
     };
 
@@ -40,7 +43,7 @@ var suggest = (function() {
      *     dictionary.
      */
     obj.setDict = function(new_dict) {
-        dict = {};
+        suggest_dict = {};
         obj.updateDict(new_dict);
     }
 
@@ -52,7 +55,7 @@ var suggest = (function() {
      *     will be made to the suggest dictionary).
      */
     obj.getDict = function() {
-        return dict;
+        return suggest_dict;
     };
 
     /**
@@ -108,7 +111,7 @@ var suggest = (function() {
                 
                 // Add suggestion for each word.
                 for (var i = 0; i < tokens.length; i++) {
-                    var matches = matchDict(tokens[i].text);
+                    var matches = matchDict(tokens[i].text, suggest_dict);
                     makeSuggestion(user_input, suggest_div, tokens[i], matches);
                 }
             }
@@ -165,20 +168,87 @@ var suggest = (function() {
      *
      * @param {string} word -- partial word that user is typing.
      * @return {array} -- Returns an array of match objects 
-     *     that have key and value attributes.
+     *     that have key, value, and help_text attributes.
      */
-    function matchDict(word) {
-        var arr = [];
-        // Switch to lower case for matching.
-        var word = word.toLowerCase();
-        for (var key in dict) {
-            // If key or value contains word.
-            if (~(key).toLowerCase().indexOf(word) || 
-                ~(dict[key]).toLowerCase().indexOf(word)) {
-                arr.push({'key': key, 'value': dict[key]});
+    function matchDict(word, dict) {
+        /**
+         * Helper function for processing dictionary keys.
+         *
+         * @param {string} dict_key -- Dictionary key
+         * @param {string or object} dict_value -- Dictionary value
+         *     which may be a string of object depending on whether
+         *     a simple dictionary or a translation dictionary is desired.
+         *
+         * @effect -- Adds match objects to the array if they have a match in
+         *     either key, value, or help_text.
+         */
+        function process(dict_key, dict_value) {
+            switch (typeof dict_value) {
+                case 'string':
+                    // Call helper function. (Note add also checks for matching).
+                    add(word, dict_key, dict_value, '');
+                    break;
+                case 'object':
+                    var obj_keys = Object.keys(dict_value);
+                    // Process arrays recursively. 
+                    if (Array.isArray(dict_value)) {
+                        for (var i = 0; i < dict_value.length; i++) {
+                            // Make recursive call.
+                            process(dict_key, dict_value[i]);
+                        }
+                    }
+                    // A non-array object implies "Translation" mode, 
+                    // which maps from keys to translation objects
+                    // with help_text, key, and value
+                    else if (~obj_keys.indexOf('value')) {
+                        // Add help text if it exists
+                        var help_str = '';
+                        if (~obj_keys.indexOf('help_text')) {
+                            help_str = dict_value['help_text'];
+                        }
+
+                        // Call helper function.
+                        add(word, dict_key, dict_value['value'], help_str);
+                    }
+                    break;
+                // Ignore other types
+                default: 
+                    break;
             }
         }
-        return arr;
+
+        /**
+         * Helper function for comparing words against a dictionary
+         *     and adding a translation object to the results array.
+         * 
+         * @param {string} word -- The text that the user has typed.
+         * @param {string} key -- The original word in the dictionary.
+         * @param {string} value_str -- The translated word.
+         * @param {string} help_str -- The definition of the word.
+         *
+         * @effect -- Add translation objects with key, value_str, and 
+         *     help_text fields to the array.
+         */
+        function add(word, key, value_str, help_str) {
+            // Switch to lower case for matching.
+            var word = word.toLowerCase();
+            if (~(key).toLowerCase().indexOf(word) ||
+                ~(value_str).toLowerCase().indexOf(word) ||
+                ~(help_str).toLowerCase().indexOf(word)) {
+                // Add to array
+                arr.push({'key': key, 'value': value_str, 'help_text': help_str});
+            }
+        }
+
+        // Result array
+        var arr = [];
+        
+        for (var key in dict) {
+            // Call helper function.
+            process(key, dict[key]);
+        }
+
+        return arr;    
     }
 
     /**
@@ -192,6 +262,27 @@ var suggest = (function() {
      * @effect -- Adds suggestion select to the suggest_div.
      */
     function makeSuggestion(user_input, suggest_div, original, suggestions) {
+        /**
+         * Helper function to show help_text.
+         *
+         * @effect -- Adds help text to .suggest-prompt div contained in the
+         *     suggest_div.
+         */
+        function showHelp() { 
+            var search = $(select).find(':selected').nextAll().andSelf();
+            var num_display = 1;
+
+            // Clear out div.
+            $(suggest_div).find('.suggest-prompt').empty();
+            
+            // Add help text.
+            for (var i = 0; i < Math.min(num_display, search.length); i++) {
+                $(suggest_div).find('.suggest-prompt').append(
+                    search[i].value + ' -- ' + search[i].title + '<br/>' 
+                );
+            }
+        }
+
         // Clear out suggestion div.
         $(suggest_div).empty();
 
@@ -206,6 +297,8 @@ var suggest = (function() {
                 var option = document.createElement('option');
                 option.value = s.value;
                 option.text = s.value + ' (' + s.key + ')';
+                option.title = s.help_text;
+                
                 // Select first option.
                 if (i === 0) {
                     option.selected = true;
@@ -214,24 +307,34 @@ var suggest = (function() {
             }
 
             // Add select to suggestion div.
-            $(suggest_div).append('<i>By <b>' + original.text + '</b>, did you mean:</i><br>');
+            $(suggest_div).append('<i>By <b>' + original.text + 
+                '</b>, did you mean:</i><br/><div class="suggest-prompt"></div>');
             $(suggest_div).append(select);
             
             // Replace text event handler.
-            $(select).on("keydown dblclick", function(evt) {
-                console.log(evt);
+            $(select).on('keydown click', function(evt) {
+                // Listen for Enter key or click.
                 if (evt.keyCode === ENTER_KEY ||
-                    evt.type === 'dblclick') {
+                    evt.type === 'click') {
                     evt.preventDefault();
-                    var old_text = $(user_input).val();
+                                        var old_text = $(user_input).val();
                     $(user_input).val(old_text.substr(0, original.begin) + 
                                       select.value + old_text.substr(original.end));
                     $(suggest_div).empty();
                     $(user_input).focus();
                 }
+                // Shortcut hotkeys. Currently doesn't work.
                 else if (evt.ctrlKey && evt.keyCode === N_KEY) {
                     $(document).trigger('keypress', [DOWN_ARROW_KEY]);
                 }
+            });
+
+            // Show first help text by default.
+            showHelp();
+
+            // Show help text of selected option.
+            $(select).on('change focus', function(evt) { 
+                showHelp();
             });
         }
     }
