@@ -1,5 +1,6 @@
 # suggest.js
-Javascript autocorrect library built using jQuery.
+Javascript autocorrect library built using jQuery.<br>
+Check out <b><i>/example</i></b> for a quick demo of suggest.js!
 
 <h3>Use cases:</h3>
 - Dynamic dictionary search: Get definitions of words or search for words by definition.
