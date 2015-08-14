@@ -59,7 +59,15 @@ var suggest = (function() {
     };
 
     /**
-     * Makes selected element have suggestions appear.
+     * Make user_input have suggestions appear in suggest_div.
+     *
+     * @param {string} user_input -- $(selector) for input to add suggestions.
+     * @param {string} suggest_div -- $(selector) where suggestions will go.
+     * @param {string} delimiter -- Delimiter to tokenize words with. 
+     *     (Default is ' '.)
+     * 
+     * @effect -- Adds suggest event handler to all appropriate inputs in
+     *     $(user_input).
      */
     obj.add = function(user_input, suggest_div, delimiter) {
         // Default delimiter
