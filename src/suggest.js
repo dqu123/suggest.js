@@ -208,7 +208,8 @@ var suggest = (function() {
             switch (typeof dict_value) {
                 case 'string':
                     // Call helper function. (Note add also checks for matching).
-                    add(word, dict_key, dict_value, '');
+                    // In the case of a string, we assume it is just a definition .
+                    add(word, '', dict_key, dict_value);
                     break;
                 case 'object':
                     var obj_keys = Object.keys(dict_value);
@@ -316,9 +317,17 @@ var suggest = (function() {
             // Add options for each suggestion.
             for (var i = 0; i < suggestions.length; i++) {
                 var s = suggestions[i]
+                
                 var option = document.createElement('option');
                 option.value = s.value;
-                option.text = s.value + ' (' + s.key + ')';
+                // Check if key is set.
+                if (s.key) {
+                    option.text = s.value + ' (' + s.key + ')';
+                }
+                // Key is not set in "simple" mode.
+                else {
+                    option.text = s.value;
+                }
                 option.title = s.help_text;
                 
                 // Select first option.
