@@ -1,0 +1,25 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h2>Webster</h2>
+    <p>Let's start with the basic dictionary functionality. Try typing "suggest" or "advice".</p>
+    <textarea name="webster"></textarea>
+    <div id="webster-suggest"></div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../src/suggest.js"></script>
+    <script type="text/javascript">
+      "use strict";
+      var webster = {'suggest': '(v) To give advice, offer input.',
+                     'advise': '(v) To give counsel to; offer an opinion or suggestion worth following'};
+      suggest.setDict(webster);
+      suggest.add('[name="webster"]', '#webster-suggest', ' ');
+      
+      var chinese = {'hi': {'value': '&#20320;&#22909;', 'help_text': '(lit.) Are you good?'}};
+      suggest.updateDict(chinese);
+
+      var classLess = {'[13-33]': {'help_text': 'Spitzer 13um/33um flux ratio', 'value': 'col_13_33'}, 'Veiling wavelength': {'help_text': 'wavelength of veiling, e.g. 5500A, 8000A, J-band', 'value': 'veil_l'}, 'MIPS160 flus': {'help_text': 'Spitzer MIPS 160um flux density (mJy)', 'value': 'S160_fd'}, 'membership notes': {'help_text': 'notes about membership status from the associated reference', 'value': 'mem_notes'}, 'HF814W': {'help_text': 'WIDE I, ACS/WFC/HRC, WFC3/UVIS (mag)', 'value': 'HF814W'}, 'MIPS70 mag': {'help_text': 'Spitzer MIPS 70um magnitude (mag)', 'value': 'S70_mag'}, 'Velocity in U dir.': {'help_text': 'spatial motion in U direction (km/s)', 'value': 'Uvel'}, 'SpT method': {'help_text': 'e.g. photometry, optical, J-, or K-band spectra', 'value': 'spt_method'}, 'IRAC slope': {'help_text': 'fitted slope b/w Spitzer IRAC 3.6 and 8.0 um bands', 'value': 'irac_slope'}, 'membership integer': {'help_text': 'membership indicator: 0=yes, 1=likely, 2=possibly, 3=unlikely, 4=no', 'value': 'member'}, 'SpT (numerical)': {'help_text': 'numerical representation of spt', 'value': 'spt_num'}, 'I_c': {'help_text': 'Johnson/Cousins I (mag)', 'value': 'I_c'}, 'cluster_name': {'help_text': 'name of cluster associated with cli', 'value': 'cluster_name'}, 'SpT as is in ref': {'help_text': 'spt as appears in source, including symbols', 'value': 'spt_lit'}, 'K': {'help_text': 'K, including K_s and other varieties (mag)', 'value': 'K'}, 'IRS16': {'help_text': 'Spitzer IRS-peakup 16um flux density (mJy)', 'value': 'S16'}, 'H': {'help_text': 'H (mag)', 'value': 'H'}, 'L': {'help_text': 'L (mag)', 'value': 'L'}};
+      suggest.updateDict(classLess);
+    </script>
+  </body>
+</html>

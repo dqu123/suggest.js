@@ -1,0 +1,18 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h2>Webster</h2>
+    <p>Let's start with the basic dictionary functionality. Try typing "suggest" or "advice".</p>
+    <textarea name="webster"></textarea>
+    <div id="webster-suggest"></div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../src/suggest.js"></script>
+    <script type="text/javascript">
+      "use strict";
+      var webster = {'suggest': '(v) To give advice, offer input.'};
+      suggest.setDict(webster);
+      suggest.add('[name="webster"]', '#webster-suggest', ' ');
+    </script>
+  </body>
+</html>
