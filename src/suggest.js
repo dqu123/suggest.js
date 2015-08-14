@@ -25,12 +25,26 @@ var suggest = (function() {
      * @param {Object} new_dict -- Object representing suggestion dictionary.
      *
      * @effect -- Adds the new_dict's key/value pairs to the current dictionary,
-     *     overriding keys that appear in both dictionaries.
+     *     converting values that appear in both dictionaries to arrays of values 
+     *     as necessary.
      */
     obj.updateDict = function(new_dict) {
         // Adds keys to dictionary.
         for (var key in new_dict) {
-            suggest_dict[key] = new_dict[key]
+            // Key doesn't already exist.
+            if (!suggest_dict.hasOwnProperty(key)) {
+                suggest_dict[key] = new_dict[key];
+            }
+            // Key already exists.
+            else {
+                var cur = suggest_dict[key];
+                if (Array.isArray(cur)) {
+                    cur.push(new_dict[key]);
+                }
+                else {
+                    suggest_dict[key] = [suggest_dict[key], new_dict[key]];
+                }
+            }
         }
     };
 
