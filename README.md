@@ -9,6 +9,20 @@ Check out <b><i>/example</i></b> for a quick demo of suggest.js!
   - Configure help_text and verbose_name of fields into complex dictionary
   - Map from common names to database column names to facilitate easier queries
   - For example the Young Stellar Object Database <b>ClassLess</b> uses this module to map from names such as Spitzer to specific database names such as S3p6. 
+
+<h2>Dictionary format</h2>
+```javascript 
+// Simple dictionary
+{'word': 'definition', ...} 
+// Simple dictionary with arrays
+{'word': ['def1', 'def2'], ...} 
+// Complex/Translation dictionary
+{'word': {'value': 'translated text', 
+                         'help_text': 'definition text'},  ...  }   
+// Complex dictionary with arrays 
+{'word': [ {'value': 'text',  'help_text': 'text'},
+           {'value': 'text', 'help_text': 'text'} ],  ... } 
+```
   
 <h2>API</h2>
 ```javascript
