@@ -2,15 +2,16 @@
 Javascript autocorrect library built using jQuery.<br>
 Check out <b><i>/example</i></b> for a quick demo of suggest.js!
 
-<h3>Use cases:</h3>
+### Use cases:
 - Dynamic dictionary search: Get definitions of words or search for words by definition.
 - Translation dictionary: Translate words, viewing definitions before choosing a suggestion.
 - Django ORM Schema Analysis
   - Configure help_text and verbose_name of fields into complex dictionary
   - Map from common names to database column names to facilitate easier queries
-  - For example the Young Stellar Object Database <b>ClassLess</b> uses this module to map from names such as Spitzer to specific database names such as S3p6. 
+  - For example the Young Stellar Object Coral (YSOC) uses this module to map from names such as Spitzer 
+    to specific database names such as `S3p6`. 
 
-<h2>Dictionary format</h2>
+## Dictionary format
 ```javascript 
 // Simple dictionary
 {'word': 'definition', ...} 
@@ -24,7 +25,7 @@ Check out <b><i>/example</i></b> for a quick demo of suggest.js!
            {'value': 'text', 'help_text': 'text'} ],  ... } 
 ```
   
-<h2>API</h2>
+## API
 ```javascript
 /**
  * Make user_input have suggestions appear in suggest_div.
